@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Runtime.Attributes;
 using Runtime.Gizmos.DrawCommands;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace Runtime.Gizmos.RuntimeState
     public class RadiusGizmoSource : GizmoSource
     {
         public float radius = 2f;
-        public Color color = Color.green;
+        public DrawColor color = DrawColor.Green;
 
         public override void CollectGizmos(List<RuntimeGizmoRequest> list)
         {

@@ -1,3 +1,4 @@
+using Runtime.Attributes;
 using UnityEngine;
 
 namespace Runtime.Gizmos.DrawCommands
@@ -14,7 +15,7 @@ namespace Runtime.Gizmos.DrawCommands
             public Vector3 Position;
             public Vector3 EndPosition;
             public float Radius;
-            public Color Color;
+            public DrawColor Color;
         }
     
 }
