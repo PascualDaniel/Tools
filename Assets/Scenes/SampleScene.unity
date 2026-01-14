@@ -163,8 +163,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4458aacf4ebc04e47ba31388ad958c8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExampleFieldGizmo
-  attackRange: 2.07
-  effectOffset: {x: 0, y: 0, z: 0}
+  attackRange: 2.68
+  effectOffset: {x: 0.2, y: -0.25, z: 0}
 --- !u!1 &182427104
 GameObject:
   m_ObjectHideFlags: 0

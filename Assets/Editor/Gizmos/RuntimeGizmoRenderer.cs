@@ -23,6 +23,7 @@ namespace Editor.Gizmos
             public MonoBehaviour owner;
             public FieldInfo field;
             public DrawRadiusAttribute attr;
+            public bool enabled = true;
         }
 
         private static void InitializeCache()
@@ -34,7 +35,8 @@ namespace Editor.Gizmos
                 {
                     var attr = f.GetCustomAttribute<DrawRadiusAttribute>();
                     if (attr != null)
-                        cache.Add(new CachedField { owner = mb, field = f, attr = attr });
+                        cache.Add(new CachedField { owner = mb, field = f, attr = attr, enabled = true });
+
                 }
             }
             isInitialized = true;
@@ -46,22 +48,29 @@ namespace Editor.Gizmos
 
             foreach (var item in cache)
             {
-                if (item.owner == null || !item.owner.gameObject.activeInHierarchy) continue;
+                if (!item.enabled || item.owner == null || !item.owner.gameObject.activeInHierarchy) continue;
+                if (!item.attr.DrawInPlayMode && Application.isPlaying) continue;
 
                 Vector3 position = item.owner.transform.position;
                 float radius = 1f;
 
                 if (item.field.FieldType == typeof(float))
-                {
                     radius = (float)item.field.GetValue(item.owner);
-                }
                 else if (item.field.FieldType == typeof(Vector3))
                 {
                     Vector3 offset = (Vector3)item.field.GetValue(item.owner);
                     position += offset;
 
                
+                    if (!string.IsNullOrEmpty(item.attr.radiusField))
+                    {
+                        var rField = item.owner.GetType().GetField(item.attr.radiusField, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        if (rField != null && rField.FieldType == typeof(float))
+                            radius = (float)rField.GetValue(item.owner);
+                    }
                 }
+                else
+                    continue;
 
                 Handles.color = GetColor(item.attr.Color);
                 Handles.DrawWireDisc(position, Vector3.up, radius);
