@@ -1,14 +1,16 @@
 using Runtime.Attributes;
+using Runtime.Attributes.Base;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor.Attributes
 {
     [CustomPropertyDrawer(typeof(DrawRadiusAttribute))]
-    public class DrawRadiusDrawer : PropertyDrawer
+    public class DrawRadiusDrawer : DrawBaseDrawer
     {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) 
         {
+          //  base.OnGUI(position, property, label);
             EditorGUI.PropertyField(position, property, label);
             if (property.propertyType == SerializedPropertyType.Float)
             {
@@ -32,21 +34,10 @@ namespace Editor.Attributes
                     }
                 }
             }
+            
+            
           
         }
-        private Color GetColor(DrawColor colorEnum)
-        {
-            return colorEnum switch
-            {
-                DrawColor.Red => Color.red,
-                DrawColor.Blue => Color.blue,
-                DrawColor.Green => Color.green,
-                DrawColor.Yellow => Color.yellow,
-                DrawColor.Magenta => Color.magenta,
-                DrawColor.Cyan => Color.cyan,
-                DrawColor.White => Color.white,
-                _ => Color.white
-            };
-        }
+      
     }
 }

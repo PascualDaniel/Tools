@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Runtime.Attributes;
+using Runtime.Attributes.Base;
+using Runtime.Gizmos.DrawCommands;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,7 +24,7 @@ namespace Editor.Gizmos
         {
             public MonoBehaviour owner;
             public FieldInfo field;
-            public DrawRadiusAttribute attr;
+            public DrawGizmoAttribute attr;
             public bool enabled = true;
         }
 
@@ -33,9 +35,17 @@ namespace Editor.Gizmos
             {
                 foreach (var f in mb.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
                 {
-                    var attr = f.GetCustomAttribute<DrawRadiusAttribute>();
+                    var attr = f.GetCustomAttribute<DrawGizmoAttribute>();
                     if (attr != null)
-                        cache.Add(new CachedField { owner = mb, field = f, attr = attr, enabled = true });
+                    {
+                        cache.Add(new CachedField
+                        {
+                            owner = mb,
+                            field = f,
+                            attr = attr,
+                            enabled = true
+                        });
+                    }
 
                 }
             }
@@ -53,27 +63,55 @@ namespace Editor.Gizmos
 
                 Vector3 position = item.owner.transform.position;
                 float radius = 1f;
-
-                if (item.field.FieldType == typeof(float))
-                    radius = (float)item.field.GetValue(item.owner);
-                else if (item.field.FieldType == typeof(Vector3))
+                Vector3 size = Vector3.one;
+                Vector3 direction = Vector3.forward;
+                
+                object value = item.field.GetValue(item.owner);
+                
+                if (value is float f)
                 {
-                    Vector3 offset = (Vector3)item.field.GetValue(item.owner);
-                    position += offset;
-
-               
-                    if (!string.IsNullOrEmpty(item.attr.radiusField))
-                    {
-                        var rField = item.owner.GetType().GetField(item.attr.radiusField, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                        if (rField != null && rField.FieldType == typeof(float))
-                            radius = (float)rField.GetValue(item.owner);
-                    }
+                    radius = f;
+                    size = Vector3.one * radius;
+                    direction = item.owner.transform.forward * radius;
+                }
+                else if (value is Vector3 v)
+                {
+                    position += v;
+                    size = v;
+                    direction = v;
+                }
+                else if (value is Bounds b)
+                {
+                    position += b.center;
+                    size = b.size;
                 }
                 else
+                {
                     continue;
+                }
 
                 Handles.color = GetColor(item.attr.Color);
-                Handles.DrawWireDisc(position, Vector3.up, radius);
+
+                switch (item.attr.Shape)
+                {
+                    case GizmoShape.Radius:
+                        Handles.DrawWireDisc(position, Vector3.up, radius);
+                        break;
+
+                    case GizmoShape.Cube:
+                        Handles.DrawWireCube(position, size);
+                        break;
+
+                    case GizmoShape.Line:
+                        Handles.DrawLine(position, position + direction);
+                        break;
+
+                    case GizmoShape.Sphere:
+                        Handles.DrawWireDisc(position, Vector3.up, radius);
+                        Handles.DrawWireDisc(position, Vector3.right, radius);
+                        Handles.DrawWireDisc(position, Vector3.forward, radius);
+                        break;
+                }
             }
         }
 

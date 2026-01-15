@@ -5,8 +5,10 @@ namespace Runtime.Gizmos.DrawCommands
 {
         public enum GizmoShape
         {
-            Sphere,
-            Line
+            Radius,
+            Cube,
+            Line,
+            Sphere
         }
 
         public struct RuntimeGizmoRequest
