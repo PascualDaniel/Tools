@@ -8,9 +8,17 @@ namespace Runtime.Gizmos.DrawCommands
             Radius,
             Cube,
             Line,
-            Sphere
+            Sphere,
+            Label 
         }
-
+        public enum Usage
+        {
+            Size,
+            Direction,
+            Offset
+        }
+        
+        public enum GizmoSpace { World, Local }
         public struct RuntimeGizmoRequest
         {
             public GizmoShape Shape;
